@@ -39,18 +39,18 @@ create table contains
     menuID int not null,
     orderID int not null,
     qty int not null,
-    primary key (orderID),
-    foreign key(orderID) references order(orderID) on update CASCADE on delete RESTRICT
+    primary key (menuID, orderID),
+    foreign key(orderID) references order(orderID) on update CASCADE on delete RESTRICT,
+    foreign key(menuID) references menu(menuID) on update CASCADE on delete RESTRICT
 ) 
 ENGINE=INNODB;
 
 create table menu
 (
     menuID int not null,
-    primary key (menuID),
     itemName varchar(30) not null,
     price float not null,
-    foreign key(menuID) references contains(menuID) on update CASCADE on delete RESTRICT
+    primary key (menuID)
 ) 
 ENGINE=INNODB;
 
@@ -58,17 +58,17 @@ create table takesFrom
 (
     menuID int not null,
     itemID int not null,
-    primary key (menuID),
-    foreign key(menuID) references contains(menuID) on update CASCADE on delete RESTRICT
+    primary key (menuID, itemID),
+    foreign key(menuID) references menu(menuID) on update CASCADE on delete RESTRICT,
+    foreign key(itemID) references stock(itemID) on update CASCADE on delete RESTRICT
 )
 ENGINE=INNODB;
 
 create table stock 
 (
     itemID int not null,
-    ingredientName carchar(30) not null,
-    primary key (itemID),
-    foreign key(itemID) references takesFrom(itemID) on update CASCADE on delete RESTRICT
+    ingredientName varchar(30) not null,
+    primary key (itemID)
 )
 ENGINE=INNODB;
 
