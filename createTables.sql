@@ -28,7 +28,7 @@ create table order
     orderTakenEID int not null,
     orderPreparedEID int not null,
     tableNumber int not null,
-    primary key (orderID)
+    primary key (orderID),
     foreign key(orderTakenEID) references employee(EID) on update CASCADE on delete RESTRICT,
     foreign key(orderPreparedEID) references employee(EID) on update CASCADE on delete RESTRICT
 )
