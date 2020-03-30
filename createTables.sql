@@ -3,8 +3,8 @@ use ajg8669;
 SET foreign_key_checks = 0;
 
 drop table if exists employee;
-drop table if exists order;
-drop table if exists contains;
+drop table if exists custOrder;
+drop table if exists orderContains;
 drop table if exists menu;
 drop table if exists takesFrom;
 drop table if exists stock;
@@ -22,7 +22,7 @@ create table employee
 )
 ENGINE=INNODB;
 
-create table order
+create table custOrder
 (
     orderID int not null,
     orderTakenEID int not null,
@@ -34,13 +34,13 @@ create table order
 )
 ENGINE=INNODB;
 
-create table contains
+create table orderContains
 (
     menuID int not null,
     orderID int not null,
     qty int not null,
     primary key (menuID, orderID),
-    foreign key(orderID) references order(orderID) on update CASCADE on delete RESTRICT,
+    foreign key(orderID) references custOrder(orderID) on update CASCADE on delete RESTRICT,
     foreign key(menuID) references menu(menuID) on update CASCADE on delete RESTRICT
 ) 
 ENGINE=INNODB;
