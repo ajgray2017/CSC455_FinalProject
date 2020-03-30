@@ -58,7 +58,7 @@ create table takesFrom
 (
     menuID int not null,
     itemID int not null,
-    primary key (menuID),
+    primary key (menuID, itemID),
     foreign key(menuID) references menu(menuID) on update CASCADE on delete RESTRICT,
     foreign key(itemID) references stock(itemID) on update CASCADE on delete RESTRICT
 )
@@ -67,7 +67,7 @@ ENGINE=INNODB;
 create table stock 
 (
     itemID int not null,
-    ingredientName carchar(30) not null,
+    ingredientName varchar(30) not null,
     primary key (itemID)
 )
 ENGINE=INNODB;
