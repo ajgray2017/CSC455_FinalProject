@@ -1,10 +1,10 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
-INSERT INTO employee VALUES(001, 1, "Ricky", "123 Lulu St.", "123-123-4561", "Server", 7.25);
-INSERT INTO employee VALUES(002, 1, "Gertude", "55 Stank Rd.", "444-864-4561", "Server", 7.25);
-INSERT INTO employee VALUES(003, 1, "Jeb", "4 Jiminy St.", "133-443-4500", "Cook", 12.50);
-INSERT INTO employee VALUES(004, 1, "Lucy", "123 Lulu St.", "123-321-0001", "Cook", 13.00);
-INSERT INTO employee VALUES(005, 1, "Carl", "666 Camel Ct.", "345-786-2345", "Cook", 14.75);
+INSERT INTO employee VALUES(001, 1, "Ricky", "123 Lulu St.", 7.25, "123-123-4561", "Server");
+INSERT INTO employee VALUES(002, 1, "Gertude", "55 Stank Rd.", 7.25, "444-864-4561", "Server");
+INSERT INTO employee VALUES(003, 1, "Jeb", "4 Jiminy St.", 12.50, "133-443-4500", "Cook");
+INSERT INTO employee VALUES(004, 1, "Lucy", "123 Lulu St.", 13.00, "123-321-0001", "Cook");
+INSERT INTO employee VALUES(005, 1, "Carl", "666 Camel Ct.", 14.75, "345-786-2345", "Cook");
 
 INSERT INTO custOrder VALUES(5001, 001, 005);
 INSERT INTO custOrder VALUES(5002, 001, 003);
