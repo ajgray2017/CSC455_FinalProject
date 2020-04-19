@@ -22,7 +22,7 @@ public class Server {
 		return s.nextInt();
 	}
 
-	private static void placeOrder(Connection conn) {
+	private static void placeOrder() {
 		// TODO Auto-generated method stub
 
 	}
@@ -45,14 +45,14 @@ public class Server {
 			System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState:     " + e.getSQLState());
             System.out.println("VendorError:  " + e.getErrorCode());
-		} 
+		}
 	}
 
-	private static void getReciept(Connection conn) {
+	private static void getReciept() {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	public void start(Connection conn) throws IOException, SQLException {
 		boolean working = true;
 
@@ -60,13 +60,13 @@ public class Server {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				placeOrder(conn);
+				placeOrder();
 				break;
 			case 2:
 				ServerView(conn);
 				break;
 			case 3:
-				getReciept(conn);
+				getReciept();
 				break;
 			case 4:
 				working = false;

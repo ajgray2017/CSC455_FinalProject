@@ -4,51 +4,75 @@ import java.util.Scanner;
 public class Cook {
 	String eid;
 	Connection conn;
-	
+
 	public Cook(String eid, Connection conn) {
 		this.eid = eid;
 		this.conn = conn;
 	}
 
-	private static int get_option() {
+	private int get_option() {
 
-		System.out.println("\t1. 1. See all current orders");
-		System.out.println("\t1. 2. Complete an order");
-		System.out.println("\t1. 3. Logout");
+		System.out.println("\t1. See all current orders");
+		System.out.println("\t2. Complete an order");
+		System.out.println("\t3. Logout");
+		System.out.println("\t4. Help");
 
 		Scanner s = new Scanner(System.in);
 		return s.nextInt();
 	}
 
-	private static void completeOrder(Connection conn) {
+	private String[] completeOrder() {
+		String[] rslt = new String[2];
+		try {
+			Scanner s = new Scanner(System.in);
+			Statement stmt = conn.createStatement();
+			
+			System.out.print("Enter OID to complete: ");
+			String oid = s.nextLine();
+
+			stmt.executeUpdate("update custOrder set orderPreparedEID = "+eid+" where orderID = "+oid+";");
+
+			ResultSet rset = stmt.executeQuery("select * from custOrder where orderID = "+oid+";");
+
+			while (rset.next()) {
+				System.out.println(rset.next());
+			}
+			
+		s.close();
+		
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
+		}
+
+		return rslt;
+
+	}
+
+	private void logout() {
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void logout(Connection conn) {
+	private void seeCurrentOrders() {
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void seeCurrentOrders(Connection conn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static void main(Connection conn) {
+	public void start() {
 
 		while (true) {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				seeCurrentOrders(conn);
-				break;
+				seeCurrentOrders();
 			case 2:
-				completeOrder(conn);
-				break;
+				completeOrder();
 			case 3:
-				logout(conn);
-				break;
+				logout();
+			case 4:
+				break; // TODO add call to help method in jdbc
 
 			}
 		}
