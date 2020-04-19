@@ -189,18 +189,22 @@ public class JDBC
   
     public static void main(String[] args) {
         String database_name, username,password;
-        Console c = System.console();
         
         database_name = "ajg8669";
         username = "ajg8669";
         password = "xjB6cq2I1";
 
         Connection conn = establish_connection(database_name, username, password);
-        String eid = c.readLine("Enter in EID:");
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter in EID: ");
+        String eid = s.nextLine();
         
         try {
         	Statement stmt = conn.createStatement();
         	ResultSet rset = stmt.executeQuery("select Position from employee where EID ='"+eid+"'");
+        	while (rset.next()) {
+                System.out.println(rset.getString(2));
+        	}
         }
         catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
