@@ -26,9 +26,21 @@ public class Server {
 
 	}
 
-	private static void ServerView() {
-		// TODO Auto-generated method stub
-
+	private void ServerView(Connection conn) {
+		// this method will allow the server to view the tables that have their EID
+		Statement stmt = null;
+		String query = "select * from tables where eid = " + eid;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rset = stmt.executeQuery(query);
+			while (rset.next()) {
+				
+			}
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState:     " + e.getSQLState());
+            System.out.println("VendorError:  " + e.getErrorCode());
+		}
 	}
 
 	private static void getReciept() {
