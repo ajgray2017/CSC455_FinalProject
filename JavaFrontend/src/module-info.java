@@ -1,9 +1,0 @@
-/**
- * 
- */
-/**
- * @author Ajgra
- *
- */
-module JavaFrontend {
-}
