@@ -14,6 +14,26 @@ public class Server {
 		return s.nextInt();
 	}
 
+	private static void placeOrder(Connection conn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static void ServerView(Connection conn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static void getReciept(Connection conn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static void logout(Connection conn) {
+		// TODO Auto-generated method stub
+
+	}
+
 	public static void main(Connection conn) {
 
 		while (true) {
@@ -34,25 +54,5 @@ public class Server {
 
 			}
 		}
-	}
-
-	private static void placeOrder(Connection conn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void ServerView(Connection conn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void getReciept(Connection conn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void logout(Connection conn) {
-		// TODO Auto-generated method stub
-
 	}
 }
