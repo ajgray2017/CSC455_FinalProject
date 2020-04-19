@@ -30,13 +30,15 @@ public class JDBC
         return conn;
     }
     
-    public static String get_position(Connection conn) {
-    	String rslt = null;
+    public static String[] get_position(Connection conn) {
+    	String[] rslt = new String[2];
     	try {
     	// do queries here that will be protected by a prepared statement
     	Scanner s = new Scanner(System.in);
     	System.out.print("Enter EID: ");
     	String eid = s.nextLine();
+    	
+    	rslt[1] = eid;
     	
     	PreparedStatement pStmt = conn.prepareStatement(
     			"select position from employee where eid = ?");
@@ -45,7 +47,7 @@ public class JDBC
     	ResultSet rset = pStmt.executeQuery();
     	
     	while (rset.next()) {
-    		rslt = rset.getString(1);
+    		rslt[0] = rset.getString(1);
     	}
     	
     	} catch (SQLException e) {
@@ -66,9 +68,14 @@ public class JDBC
 
         Connection conn = establish_connection(database_name, username, password);
         
-        String pos = get_position(conn);
+        String[] pos = get_position(conn);
         
-        System.out.println(pos);
+        if (pos[0] == "Cook") {
+        	Cook cook = new Cook(pos[1], conn);
+        }
+        else if (pos[0] == "Server") {
+        	Server server = new Server(pos[1], conn);
+        }
     }
 }
 
