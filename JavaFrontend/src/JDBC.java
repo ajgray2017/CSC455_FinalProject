@@ -70,11 +70,13 @@ public class JDBC
         
         String[] pos = get_position(conn);
         
-        if (pos[0] == "Cook") {
+        if (pos[0].startsWith("C")) {
         	Cook cook = new Cook(pos[1], conn);
         }
-        else if (pos[0] == "Server") {
+        
+        else if (pos[0].startsWith("S")) {
         	Server server = new Server(pos[1], conn);
+        	System.out.println("hey");
         }
     }
 }
