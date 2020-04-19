@@ -34,7 +34,7 @@ public class Server {
 
 	}
 
-	public static void main(Connection conn) {
+	public static void main(Connection conn, String eid) {
 
 		while (true) {
 			int option = get_option();
