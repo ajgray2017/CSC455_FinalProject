@@ -11,9 +11,8 @@ import java.util.Scanner;
 public class JDBC
 {
        
+    public static Connection establish_connection(String database_name, String sql_username, String sql_passwd) {
     //Establish a connection with specified database. Return connection object
-    public static Connection establish_connection(String database_name, String sql_username, String sql_passwd) 
-    {
         Connection conn = null;
         try {
             
@@ -31,9 +30,9 @@ public class JDBC
         
         return conn;
     }
-    
-    //Use the specified connection object to interact with the database
+  
     private static void use_database(Connection conn) {
+    	//Use the specified connection object to interact with the database
         try {
         // Do something with the Connection
             Statement stmt = conn.createStatement();
@@ -108,6 +107,11 @@ public class JDBC
             }
     }
     private static void prepared_statement(Connection conn) {
+    	//Method demonstrates calling a stored procedure
+        //Note: The stored procedure can also be called at the mysql prompt
+        // using call CountProducts(4, @value), which returns (in @value) number of 
+        // products with price > 4. The @ syntax defines a variable.
+        // You can then select @value to show the result
         try {
             Console c = System.console();
             
@@ -139,11 +143,7 @@ public class JDBC
                 System.out.println("VendorError:  " + e.getErrorCode());
             }
     }
-    //Method demonstrates calling a stored procedure
-    //Note: The stored procedure can also be called at the mysql prompt
-    // using call CountProducts(4, @value), which returns (in @value) number of 
-    // products with price > 4. The @ syntax defines a variable.
-    // You can then select @value to show the result
+
     private static void call_stored_procedure(Connection conn) {
         try {
             Console c = System.console();
@@ -186,36 +186,49 @@ public class JDBC
         Scanner s = new Scanner(System.in);
         return s.nextInt();
     }
-    
+  
     public static void main(String[] args) {
         String database_name, username,password;
+        Console c = System.console();
         
         database_name = "ajg8669";
         username = "ajg8669";
         password = "xjB6cq2I1";
 
-        Connection conn = establish_connection(database_name, username, new String(password));
+        Connection conn = establish_connection(database_name, username, password);
+        String eid = c.readLine("Enter in EID:");
         
-        while (true) {
-            int option = get_option();
-            switch (option) {
-                case 1:
-                    use_database(conn);
-                    break;
-                case 2:
-                    sql_inject(conn);
-                    break;
-                case 3:
-                    prepared_statement(conn);
-                    break;
-                case 4:
-                    call_stored_procedure(conn);
-                    break;
-                case 5:
-                    System.exit(0);
-                    break;
-            }
+        try {
+        	Statement stmt = conn.createStatement();
+        	ResultSet rset = stmt.executeQuery("select Position from employee where EID ='"+eid+"'");
         }
+        catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState:     " + e.getSQLState());
+            System.out.println("VendorError:  " + e.getErrorCode());
+        }
+        
+        
+//        while (true) {
+//            int option = get_option();
+//            switch (option) {
+//                case 1:
+//                    use_database(conn);
+//                    break;
+//                case 2:
+//                    sql_inject(conn);
+//                    break;
+//                case 3:
+//                    prepared_statement(conn);
+//                    break;
+//                case 4:
+//                    call_stored_procedure(conn);
+//                    break;
+//                case 5:
+//                    System.exit(0);
+//                    break;
+//            }
+//        }
     }
 }
 
