@@ -50,6 +50,8 @@ public class JDBC
     		rslt[0] = rset.getString(1);
     	}
     	
+    	s.close();
+    	
     	} catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState:     " + e.getSQLState());
@@ -69,12 +71,15 @@ public class JDBC
         Connection conn = establish_connection(database_name, username, password);
         
         String[] pos = get_position(conn);
+        System.out.println("Welcome "+pos[0]);
         
         if (pos[0] == "Cook") {
         	Cook cook = new Cook(pos[1], conn);
+        	cook.start();
         }
-        else if (pos[0] == "Server") {
+        if (pos[0] == "Server") {
         	Server server = new Server(pos[1], conn);
+        	server.start();
         }
     }
 }

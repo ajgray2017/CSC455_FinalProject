@@ -21,42 +21,42 @@ public class Server {
 		return s.nextInt();
 	}
 
-	private static void placeOrder(Connection conn) {
+	private static void placeOrder() {
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void ServerView(Connection conn) {
+	private static void ServerView() {
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void getReciept(Connection conn) {
+	private static void getReciept() {
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void logout(Connection conn) {
+	private static void logout() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public static void main(Connection conn, String eid) {
+	public void start() {
 
 		while (true) {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				placeOrder(conn);
+				placeOrder();
 				break;
 			case 2:
-				ServerView(conn);
+				ServerView();
 				break;
 			case 3:
-				getReciept(conn);
+				getReciept();
 				break;
 			case 4:
-				logout(conn);
+				logout();
 				break;
 
 			}
