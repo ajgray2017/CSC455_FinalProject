@@ -2,6 +2,13 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Server {
+	String eid;
+	Connection conn;
+	
+	public Server(String eid, Connection conn) {
+		this.eid = eid;
+		this.conn = conn;
+	}
 
 	private static int get_option() {
 
