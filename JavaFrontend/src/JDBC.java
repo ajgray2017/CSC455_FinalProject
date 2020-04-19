@@ -4,6 +4,7 @@
  *
  */
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -59,7 +60,7 @@ public class JDBC
     	return rslt;
     }
   
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, SQLException {
         String database_name, username,password;
         
         database_name = "ajg8669";
@@ -76,7 +77,7 @@ public class JDBC
         
         else if (pos[0].startsWith("S")) {
         	Server server = new Server(pos[1], conn);
-        	System.out.println("hey");
+        	server.start(conn);
         }
     }
 }

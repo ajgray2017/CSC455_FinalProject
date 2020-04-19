@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -12,10 +13,10 @@ public class Server {
 
 	private static int get_option() {
 
-		System.out.println("\t1. 1. Place an order");
-		System.out.println("\t1. 2. See and edit your current orders");
-		System.out.println("\t1. 3. Get reciept");
-		System.out.println("\t1. 4. Logout");
+		System.out.println("\t1. Place an order");
+		System.out.println("\t2. See and edit your current orders");
+		System.out.println("\t3. Get reciept");
+		System.out.println("\t4. Logout");
 
 		Scanner s = new Scanner(System.in);
 		return s.nextInt();
@@ -26,22 +27,25 @@ public class Server {
 
 	}
 
-	private void ServerView(Connection conn) {
+	private void ServerView(Connection conn) throws IOException {
 		// this method will allow the server to view the tables that have their EID
 		Statement stmt = null;
-		String query = "select * from tables where eid = " + eid;
+		String query = "select orderID, tableNumber from custOrder where orderTakenEid = " + eid;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rset = stmt.executeQuery(query);
 			while (rset.next()) {
-				
+				int orderID = rset.getInt("orderID");
+				int tableNumber = rset.getInt("tableNumber");
+				System.out.println("order: " + orderID + "\t" +
+						"table: " + tableNumber);
+				System.in.read();
 			}
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState:     " + e.getSQLState());
             System.out.println("VendorError:  " + e.getErrorCode());
-		}
-
+		} 
 	}
 
 	private static void getReciept(Connection conn) {
@@ -49,14 +53,10 @@ public class Server {
 
 	}
 
-	private static void logout(Connection conn) {
-		// TODO Auto-generated method stub
+	public void start(Connection conn) throws IOException, SQLException {
+		boolean working = true;
 
-	}
-
-	public static void start(Connection conn) {
-
-		while (true) {
+		while (working) {
 			int option = get_option();
 			switch (option) {
 			case 1:
@@ -69,7 +69,7 @@ public class Server {
 				getReciept(conn);
 				break;
 			case 4:
-				logout(conn);
+				working = false;
 				break;
 
 			}
