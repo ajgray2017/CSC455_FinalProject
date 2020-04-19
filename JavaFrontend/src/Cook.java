@@ -26,20 +26,20 @@ public class Cook {
 		try {
 			Scanner s = new Scanner(System.in);
 			Statement stmt = conn.createStatement();
-			
+
 			System.out.print("Enter OID to complete: ");
 			String oid = s.nextLine();
 
-			stmt.executeUpdate("update custOrder set orderPreparedEID = "+eid+" where orderID = "+oid+";");
+			stmt.executeUpdate("update custOrder set orderPreparedEID = " + eid + " where orderID = " + oid + ";");
 
-			ResultSet rset = stmt.executeQuery("select * from custOrder where orderID = "+oid+";");
+			ResultSet rset = stmt.executeQuery("select * from custOrder where orderID = " + oid + ";");
 
 			while (rset.next()) {
 				System.out.println(rset.next());
 			}
-			
-		s.close();
-		
+
+			s.close();
+
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
 			System.out.println("SQLState:     " + e.getSQLState());
@@ -61,16 +61,20 @@ public class Cook {
 	}
 
 	public void start() {
+		boolean working = true;
 
-		while (true) {
+		while (working) {
 			int option = get_option();
 			switch (option) {
 			case 1:
 				seeCurrentOrders();
+				break;
 			case 2:
 				completeOrder();
+				break;
 			case 3:
-				logout();
+				working = false;
+				break;
 			case 4:
 				break; // TODO add call to help method in jdbc
 

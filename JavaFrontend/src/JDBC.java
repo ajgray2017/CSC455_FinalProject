@@ -74,6 +74,7 @@ public class JDBC
         
         if (pos[0].startsWith("C")) {
         	Cook cook = new Cook(pos[1], conn);
+        	cook.start();
         }
         
         else if (pos[0].startsWith("S")) {
