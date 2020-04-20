@@ -11,13 +11,14 @@ public class Cook {
 	}
 
 	private int get_option() {
-
-		System.out.println("\t1. See all current orders");
-		System.out.println("\t2. Complete an order");
-		System.out.println("\t3. Logout");
-		System.out.println("\t4. Help");
-
+		
 		Scanner s = new Scanner(System.in);
+		
+		System.out.println("1. See all current orders");
+		System.out.println("2. Complete an order");
+		System.out.println("3. Logout");
+		System.out.println("4. Help");
+		
 		return s.nextInt();
 	}
 
@@ -27,15 +28,15 @@ public class Cook {
 			Scanner s = new Scanner(System.in);
 			Statement stmt = conn.createStatement();
 
-			System.out.print("Enter OID to complete: ");
+			System.out.print("\tEnter OID to complete: ");
 			String oid = s.nextLine();
 
 			stmt.executeUpdate("update custOrder set orderPreparedEID = " + eid + " where orderID = " + oid + ";");
 
-			ResultSet rset = stmt.executeQuery("select * from custOrder where orderID = " + oid + ";");
+			ResultSet rset = stmt.executeQuery("select orderID as OID, orderPreparedEID as Cooks_EID from custOrder where orderID = " + oid + ";");
 
 			while (rset.next()) {
-				System.out.println(rset.next());
+				System.out.println("\tOID: "+rset.getInt("OID")+", EID: "+rset.getInt("Cooks_EID"));
 			}
 
 			s.close();
@@ -50,14 +51,29 @@ public class Cook {
 
 	}
 
-	private void logout() {
-		// TODO Auto-generated method stub
+	private String[] seeCurrentOrders() {
+		String[] rslt = new String[2];
+		try {
+			Scanner s = new Scanner(System.in);
+			Statement stmt = conn.createStatement();
 
-	}
+			ResultSet rset = stmt.executeQuery("select c.orderID, m.itemName from custOrder as c, menu as m, orderContains as o where o.menuID = m.menuID and c.orderID = o.orderID order by orderID;");
+			
+			System.out.println("\tOID: "+rset.getInt("orderID")); 
 
-	private void seeCurrentOrders() {
-		// TODO Auto-generated method stub
+			while (rset.next()) {
+				System.out.println("\t\tItem Name: "+rset.getString("itemName"));
+			}
 
+			s.close();
+
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
+		}
+
+		return rslt;
 	}
 
 	public void start() {
