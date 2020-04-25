@@ -10,35 +10,36 @@ public class Cook {
 		this.conn = conn;
 	}
 
-	private int get_option() {
-
-		System.out.println("\t1. See all current orders");
-		System.out.println("\t2. Complete an order");
-		System.out.println("\t3. Logout");
-		System.out.println("\t4. Help");
+	private int getOption() {
+		/* used to print out the menu, and receive the users input */
 
 		Scanner s = new Scanner(System.in);
+
+		System.out.println("1. See all current orders");
+		System.out.println("2. Complete an order");
+		System.out.println("3. Logout");
+		System.out.println("4. Help");
+
 		return s.nextInt();
 	}
 
-	private String[] completeOrder() {
-		String[] rslt = new String[2];
+	private void completeOrder() {
+		/**/
 		try {
 			Scanner s = new Scanner(System.in);
 			Statement stmt = conn.createStatement();
 
-			System.out.print("Enter OID to complete: ");
+			System.out.print("\tEnter OID to complete: ");
 			String oid = s.nextLine();
 
 			stmt.executeUpdate("update custOrder set orderPreparedEID = " + eid + " where orderID = " + oid + ";");
 
-			ResultSet rset = stmt.executeQuery("select * from custOrder where orderID = " + oid + ";");
+			ResultSet rset = stmt.executeQuery(
+					"select orderID as OID, orderPreparedEID as Cooks_EID from custOrder where orderID = " + oid + ";");
 
 			while (rset.next()) {
-				System.out.println(rset.next());
+				System.out.println("\tOID: " + rset.getInt("OID") + ", EID: " + rset.getInt("Cooks_EID") + "\n");
 			}
-
-			s.close();
 
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
@@ -46,17 +47,39 @@ public class Cook {
 			System.out.println("VendorError:  " + e.getErrorCode());
 		}
 
-		return rslt;
-
-	}
-
-	private void logout() {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void seeCurrentOrders() {
-		// TODO Auto-generated method stub
+		/*
+		 * Used to complete an order, searches the DB for a null value in the
+		 * OrderPreparedEID in the custOrder table, denoting that the order has not yet
+		 * been prepared
+		 */
+		try {
+			Scanner s = new Scanner(System.in);
+			Statement stmt = conn.createStatement();
+
+			ResultSet rset = stmt.executeQuery(
+					"select c.orderID, m.itemName, o.qty from custOrder as c, menu as m, orderContains as o "
+					+ "where c.orderPreparedEID is null and o.menuID = m.menuID and c.orderID = o.orderID order by orderID;");
+
+			if (rset.next()) {
+
+				System.out.println("\tOID: " + rset.getInt("orderID"));
+
+				while (rset.next()) {
+					System.out.println("\tItem Name: " + rset.getString("itemName") 
+										+ " QTY: " + rset.getString("qty") + "\n");
+				}
+			} else {
+				System.out.println("\tNo Current Orders\n");
+			}
+
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
+		}
 
 	}
 
@@ -64,7 +87,7 @@ public class Cook {
 		boolean working = true;
 
 		while (working) {
-			int option = get_option();
+			int option = getOption();
 			switch (option) {
 			case 1:
 				seeCurrentOrders();
