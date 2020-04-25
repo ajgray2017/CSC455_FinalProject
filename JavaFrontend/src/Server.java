@@ -21,38 +21,45 @@ public class Server {
 		Scanner s = new Scanner(System.in);
 		return s.nextInt();
 	}
+	
+	private void createOrder(Connection conn) throws SQLException {
+		Scanner s = new Scanner(System.in);
+		System.out.println("What item would you like to ring in? type done when done: ");
+		String menuId = s.nextLine();
+		
+		while (true) {
+			if (!s.nextLine().equals("done")) {
+				checkStock(conn, menuId);
+				menuId = s.nextLine();
+			} else {
+				break;
+			}
+			
+		}
+	}
 
-	private static void placeOrder(Connection conn) throws SQLException {
+	private void checkStock(Connection conn, String menuID) throws SQLException {
 		// will place an order only if the item is in stock rollback if not
 		try {
 			conn.setAutoCommit(false);
-			Scanner s = new Scanner(System.in);
-			System.out.println("What item would you like to ring in? ");
-			String menuId = s.nextLine();
 			// nested query
 			PreparedStatement pstmt = conn.prepareStatement(
-					"select r1.itemID, r3.amount, r3.ingredientName from takesFrom as r1, menu as r2, stock as r3 where r3.amount >= 0 and r1.menuID = r2.menuID and r1.menuID = (select menuID from menu where itemName = ?)");
+					"select r1.itemID, r3.amount, r3.ingredientName from takesFrom as r1, menu as r2, stock as r3 where r1.menuID = r2.menuID and r1.menuID = (select menuID from menu where itemName = ?)");
 
 			Statement stmt = conn.createStatement();
 
-			pstmt.setString(1, menuId);
+			pstmt.setString(1, menuID);
 
 			ResultSet rset = pstmt.executeQuery();
 
 			while (rset.next()) {
-
-				if (rset.getInt("amount") == 0) {
-					System.out.println(rset.getString("ingredientName") + " is out of stock.");
-				} else {
-					stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
-							+ rset.getInt("itemID"));
-				}
+				
+				stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
+						+ rset.getInt("itemID"));
 			}
 			conn.commit();
 		} catch (SQLException e) {
-			System.out.println("SQLException: " + e.getMessage());
-			System.out.println("SQLState:     " + e.getSQLState());
-			System.out.println("VendorError:  " + e.getErrorCode());
+			System.out.println("item out of stock: rolling back....");
 			conn.rollback();
 		} finally {
 			conn.setAutoCommit(true);
@@ -92,7 +99,7 @@ public class Server {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				placeOrder(conn);
+				createOrder(conn);
 				break;
 			case 2:
 				ServerView(conn);
