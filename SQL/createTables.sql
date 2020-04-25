@@ -26,11 +26,10 @@ create table custOrder
 (
     orderID int not null,
     orderTakenEID int not null,
-    orderPreparedEID int not null,
+    orderPreparedEID int,
     tableNumber int not null,
     primary key (orderID),
-    foreign key(orderTakenEID) references employee(EID) on update CASCADE on delete RESTRICT,
-    foreign key(orderPreparedEID) references employee(EID) on update CASCADE on delete RESTRICT
+    foreign key(orderTakenEID) references employee(EID) on update CASCADE on delete RESTRICT
 )
 ENGINE=INNODB;
 
