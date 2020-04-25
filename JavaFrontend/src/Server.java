@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Server {
 	String eid;
 	Connection conn;
-	
+
 	public Server(String eid, Connection conn) {
 		this.eid = eid;
 		this.conn = conn;
@@ -27,27 +27,35 @@ public class Server {
 		try {
 			conn.setAutoCommit(false);
 			Scanner s = new Scanner(System.in);
-			System.out.println("What would you like to ring in? ");
-			String itm = s.nextLine();
-		
-			// SQL statement
+			System.out.println("What item would you like to ring in? ");
+			String menuId = s.nextLine();
+			// nested query
+			PreparedStatement pstmt = conn.prepareStatement(
+					"select r1.itemID, r3.amount, r3.ingredientName from takesFrom as r1, menu as r2, stock as r3 where r3.amount >= 0 and r1.menuID = r2.menuID and r1.menuID = (select menuID from menu where itemName = ?)");
+
 			Statement stmt = conn.createStatement();
-			String SQL = "";
-			
-			// start transaction block
-			conn.setAutoCommit(false);
-			
-			// execute the SQL query
-			stmt.executeUpdate(SQL);
-			
-			conn.commit();	// if there is no error
-			
-			conn.setAutoCommit(true);
-	    	
-	    		
+
+			pstmt.setString(1, menuId);
+
+			ResultSet rset = pstmt.executeQuery();
+
+			while (rset.next()) {
+
+				if (rset.getInt("amount") == 0) {
+					System.out.println(rset.getString("ingredientName") + " is out of stock.");
+				} else {
+					stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
+							+ rset.getInt("itemID"));
+				}
+			}
+			conn.commit();
 		} catch (SQLException e) {
-			// if there is any error
-            conn.rollback();
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
+			conn.rollback();
+		} finally {
+			conn.setAutoCommit(true);
 		}
 
 	}
@@ -62,14 +70,13 @@ public class Server {
 			while (rset.next()) {
 				int orderID = rset.getInt("orderID");
 				int tableNumber = rset.getInt("tableNumber");
-				System.out.println("order: " + orderID + "\t" +
-						"table: " + tableNumber);
+				System.out.println("order: " + orderID + "\t" + "table: " + tableNumber);
 				System.in.read();
 			}
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
-            System.out.println("SQLState:     " + e.getSQLState());
-            System.out.println("VendorError:  " + e.getErrorCode());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
 		}
 	}
 
@@ -77,7 +84,7 @@ public class Server {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void start(Connection conn) throws IOException, SQLException {
 		boolean working = true;
 
