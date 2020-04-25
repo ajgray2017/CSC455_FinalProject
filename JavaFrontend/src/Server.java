@@ -28,10 +28,16 @@ public class Server {
 			conn.setAutoCommit(false);
 			Scanner s = new Scanner(System.in);
 			System.out.println("What item would you like to ring in? ");
-			PreparedStatement pstmt = conn.prepareStatement("");
+			String menuId = s.nextLine();
+			PreparedStatement pstmt = conn.prepareStatement("select menuID from menu where itemName = ?");
 			
+			pstmt.setString(1, menuId);
 			
-			
+			ResultSet rset = pstmt.executeQuery();
+	    	
+	    	while (rset.next()) {
+	    		System.out.println(rset.getString(1));
+	    	}
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState:     " + e.getSQLState());
