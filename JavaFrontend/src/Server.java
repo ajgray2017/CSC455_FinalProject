@@ -22,8 +22,23 @@ public class Server {
 		return s.nextInt();
 	}
 
-	private static void placeOrder() {
-		// TODO Auto-generated method stub
+	private static void placeOrder(Connection conn) throws SQLException {
+		// will place an order only if the item is in stock rollback if not
+		try {
+			conn.setAutoCommit(false);
+			Scanner s = new Scanner(System.in);
+			System.out.println("What item would you like to ring in? ");
+			PreparedStatement pstmt = conn.prepareStatement("");
+			
+			
+			
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState:     " + e.getSQLState());
+            System.out.println("VendorError:  " + e.getErrorCode());
+		} finally {
+			conn.setAutoCommit(true);
+		}
 
 	}
 
@@ -60,7 +75,7 @@ public class Server {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				placeOrder();
+				placeOrder(conn);
 				break;
 			case 2:
 				ServerView(conn);
