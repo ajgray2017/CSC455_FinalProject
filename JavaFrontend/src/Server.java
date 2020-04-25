@@ -29,14 +29,19 @@ public class Server {
 			Scanner s = new Scanner(System.in);
 			System.out.println("What item would you like to ring in? ");
 			String menuId = s.nextLine();
-			PreparedStatement pstmt = conn.prepareStatement("select menuID from menu where itemName = ?");
+			// nested query
+			PreparedStatement pstmt = conn.prepareStatement("select itemID from takesFrom where menuID = (select menuID from menu where itemName = ?)");
+			Statement stmt = conn.createStatement();
 			
 			pstmt.setString(1, menuId);
 			
 			ResultSet rset = pstmt.executeQuery();
 	    	
 	    	while (rset.next()) {
-	    		System.out.println(rset.getString(1));
+	    		ResultSet set = stmt.executeQuery("select amount from stock where itemID =" + rset.getString("itemID"));
+	    		if (set.getInt("amount") > 0) {
+	    			stmt.executeUpdate("update stock set amount =" + (set.getInt("amount")-1));
+	    		}
 	    	}
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
