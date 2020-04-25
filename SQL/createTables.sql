@@ -68,6 +68,7 @@ create table stock
     itemID int not null,
     ingredientName varchar(30) not null,
     amount int not null,
+    check(amount >= 0),
     primary key (itemID)
 )
 ENGINE=INNODB;
