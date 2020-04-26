@@ -37,47 +37,49 @@ public class Server {
 		s.nextLine();
 
 		// todo add in trans here?
-		// try {
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery("select max(orderID) as newID from custOrder");
-		if (rset.next()) {
-			newID = rset.getInt("newID") + 1;
-			stmt.executeUpdate("insert into custOrder values (" + (newID) + ", " + eid + ", null, " + tableNum + ")");
-		}
-		rset.close();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rset = stmt.executeQuery("select max(orderID) as newID from custOrder");
+			if (rset.next()) {
+				newID = rset.getInt("newID") + 1;
+				stmt.executeUpdate(
+						"insert into custOrder values (" + (newID) + ", " + eid + ", null, " + tableNum + ")");
+			}
+			rset.close();
 
-		while (true) {
-			if (itemName.startsWith("d")) {
-				break;
-			} else {
-				for (int i = 0; i < qty; i++) {
-					// bool instock if checkStock returns true, doesn't rollback changes
-					inStock = checkStock(itemName);
+			while (true) {
+				if (itemName.startsWith("d")) {
+					break;
+				} else {
+					for (int i = 0; i < qty; i++) {
+						// bool instock if checkStock returns true, doesn't rollback changes
+						inStock = checkStock(itemName);
+					}
+				}
+				if (inStock) {
+					stmt = conn.createStatement();
+					rset = stmt.executeQuery("select menuID from menu where itemName = \"" + itemName + "\"");
+					if (rset.next()) {
+						stmt.executeUpdate("insert into orderContains values(" + rset.getInt("menuID") + ", " + newID
+								+ ", " + qty + ")");
+					}
+				}
+
+				System.out.println("Next item? Type 'done' to finish ordering.");
+				itemName = s.nextLine();
+				if (itemName.equals("done")) {
+					break;
+				} else {
+					System.out.println("How many?");
+					qty = s.nextInt();
+					s.nextLine();
 				}
 			}
-			if (inStock) {
-				stmt = conn.createStatement();
-				rset = stmt.executeQuery("select menuID from menu where itemName = \"" + itemName + "\"");
-				if (rset.next()) {
-					stmt.executeUpdate("insert into orderContains values(" + rset.getInt("menuID") + ", " + newID + ", " + qty + ")");
-				}
-			}
-
-			System.out.println("Next item? Type 'done' to finish ordering.");
-			itemName = s.nextLine();
-			if (itemName.equals("done")) {
-				break;
-			} else {
-				System.out.println("How many?");
-				qty = s.nextInt();
-				s.nextLine();
-			}
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
 		}
-//		} catch (SQLException e) {
-//			System.out.println("SQLException: " + e.getMessage());
-//			System.out.println("SQLState:     " + e.getSQLState());
-//			System.out.println("VendorError:  " + e.getErrorCode());
-//		}
 	}
 
 	private Boolean checkStock(String itemName) throws SQLException {
@@ -148,20 +150,25 @@ public class Server {
 		ServerView();
 
 		String order = s.nextLine();
+		float totalCost = 0;
 
 		try {
 			Statement stmt = conn.createStatement();
 
 			ResultSet rset = stmt.executeQuery(
-					"select m.menuID, m.itemName, v.qty, v.qty * m.price as totalItem from menu as m, server_" + eid
-							+ "_view as v where v.menuID = m.menuID and v.orderID = " + order);
+					"select t.menuID, t.itemName, t.qty, t.totalItem, t.totalCost from (select m.menuID, m.itemName, v.qty, v.qty * m.price as totalItem, sum(x.totalItemCost) as totalCost from (select v.qty * m.price as totalItemCost from menu as m, server_"
+							+ eid + "_view as v where v.menuID = m.menuID and v.orderID = " + order
+							+ ") as x, menu as m, server_" + eid
+							+ "_view as v where v.menuID = m.menuID and v.orderID = " + order
+							+ " group by m.menuID) as t group by t.menuID");
 
 			System.out.println("\tReciept for " + order + ":");
 			while (rset.next()) {
 				System.out.println("\t\t" + rset.getInt("qty") + " " + rset.getString("itemName") + "....."
 						+ rset.getFloat("totalItem"));
-				// System.out.println("\t\t\t"+rset.getFloat("totalCost"));
+				totalCost = rset.getFloat("totalCost");
 			}
+			System.out.println("\t\tTotal....." + totalCost);
 
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
