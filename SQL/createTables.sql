@@ -8,6 +8,7 @@ drop table if exists orderContains;
 drop table if exists menu;
 drop table if exists takesFrom;
 drop table if exists stock;
+drop procedure if exists greeting;
 
 create table employee
 (
@@ -72,5 +73,14 @@ create table stock
     primary key (itemID)
 )
 ENGINE=INNODB;
+
+DELIMITER  $$ 
+
+ create procedure greeting(in inEid integer, out ename varchar)
+   begin
+   select employeeName into ename from employee where inEid = eid;
+   END $$ 
+
+DELIMITER ;
 
 SET foreign_key_checks = 1;
