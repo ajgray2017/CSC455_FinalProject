@@ -13,32 +13,32 @@ public class Server {
 
 	private static int get_option() {
 
-		System.out.println("\t1. Place an order");
-		System.out.println("\t2. See and edit your current orders");
-		System.out.println("\t3. Get reciept");
-		System.out.println("\t4. Logout");
+		System.out.println("1. Place an order");
+		System.out.println("2. See current orders");
+		System.out.println("3. Get reciept");
+		System.out.println("4. Logout");
 
 		Scanner s = new Scanner(System.in);
 		return s.nextInt();
 	}
 	
-	private void createOrder(Connection conn) throws SQLException {
+	private void createOrder() throws SQLException {
 		Scanner s = new Scanner(System.in);
-		System.out.println("What item would you like to ring in? type done when done: ");
-		String menuId = s.nextLine();
+		System.out.println("What item would you like to ring in? Type done when done: ");
+		String menuID = s.nextLine();
 		
-		while (true) {
-			if (!s.nextLine().equals("done")) {
-				checkStock(conn, menuId);
-				menuId = s.nextLine();
-			} else {
+		while(true) {
+			if (menuID.equals("")) {
 				break;
+			}else{
+				checkStock(menuID);
+				menuID = s.nextLine();
 			}
 			
 		}
 	}
 
-	private void checkStock(Connection conn, String menuID) throws SQLException {
+	private void checkStock(String menuID) throws SQLException {
 		// will place an order only if the item is in stock rollback if not
 		try {
 			conn.setAutoCommit(false);
@@ -59,7 +59,7 @@ public class Server {
 			}
 			conn.commit();
 		} catch (SQLException e) {
-			System.out.println("item out of stock: rolling back....");
+			System.out.println("Item out of stock: rolling back....");
 			conn.rollback();
 		} finally {
 			conn.setAutoCommit(true);
@@ -67,19 +67,24 @@ public class Server {
 
 	}
 
-	private void ServerView(Connection conn) throws IOException {
-		// this method will allow the server to view the tables that have their EID
-		Statement stmt = null;
-		String query = "select orderID, tableNumber from custOrder where orderTakenEid = " + eid;
+	private void ServerView() throws IOException {
+		// this method will allow the server to view the tables that have their EID		
+		
 		try {
-			stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(query);
+			Statement stmt = conn.createStatement();
+			
+			//attempt to make a new view for this server, if already exists catch and move on. Will make views for every individual server.
+			try {
+				stmt.executeUpdate("create view server_"+eid+"_view as select orderID, tableNumber from custOrder where orderTakenEid = " + eid);
+			}catch(SQLException e) {
+			}
+			ResultSet rset = stmt.executeQuery("select * from server_"+eid+"_view");
 			while (rset.next()) {
 				int orderID = rset.getInt("orderID");
 				int tableNumber = rset.getInt("tableNumber");
-				System.out.println("order: " + orderID + "\t" + "table: " + tableNumber);
-				System.in.read();
+				System.out.println("\torder: " + orderID + "\t" + "table: " + tableNumber);
 			}
+			System.out.println("");
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
 			System.out.println("SQLState:     " + e.getSQLState());
@@ -99,10 +104,10 @@ public class Server {
 			int option = get_option();
 			switch (option) {
 			case 1:
-				createOrder(conn);
+				createOrder();
 				break;
 			case 2:
-				ServerView(conn);
+				ServerView();
 				break;
 			case 3:
 				getReciept();
