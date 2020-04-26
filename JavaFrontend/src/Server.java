@@ -73,7 +73,7 @@ public class Server {
 		try {
 			Statement stmt = conn.createStatement();
 			
-			//attempt to make a new view for this server, if already exists catch and move on. Will make views for every individual server.
+			//attempt to make a new view for this server, if already exists catch and move on. Will automatically make views for every individual server.
 			try {
 				stmt.executeUpdate("create view server_"+eid+"_view as select orderID, tableNumber from custOrder where orderTakenEid = " + eid);
 			}catch(SQLException e) {

@@ -61,15 +61,15 @@ public class Cook {
 
 			ResultSet rset = stmt.executeQuery(
 					"select c.orderID, m.itemName, o.qty from custOrder as c, menu as m, orderContains as o "
-					+ "where c.orderPreparedEID is null and o.menuID = m.menuID and c.orderID = o.orderID order by orderID;");
+							+ "where c.orderPreparedEID is null and o.menuID = m.menuID and c.orderID = o.orderID order by orderID;");
 
 			if (rset.next()) {
 
 				System.out.println("\tOID: " + rset.getInt("orderID"));
 
 				while (rset.next()) {
-					System.out.println("\tItem Name: " + rset.getString("itemName") 
-										+ " QTY: " + rset.getString("qty") + "\n");
+					System.out.println(
+							"\tItem Name: " + rset.getString("itemName") + " QTY: " + rset.getString("qty") + "\n");
 				}
 			} else {
 				System.out.println("\tNo Current Orders\n");
