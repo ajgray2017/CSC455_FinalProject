@@ -24,16 +24,18 @@ public class Server {
 
 	private void createOrder() throws SQLException {
 		Scanner s = new Scanner(System.in);
+		s.useDelimiter(System.lineSeparator());
 		System.out.println("What item would you like to ring in? Type 'done' to finish ordering.");
 		String itemName = s.nextLine();
 		System.out.println("How many?");
 		Integer qty = s.nextInt();
-
+		
 		while (true) {
 			if (itemName.startsWith("d")) {
 				break;
 			} else {
 				for (int i = 0; i < qty; i++) {
+					System.out.println("for");
 					checkStock(itemName);
 				}
 			}
@@ -41,7 +43,7 @@ public class Server {
 			System.out.println("Next item? Type 'done' to finish ordering.");
 			itemName = s.nextLine();
 			s.nextLine();
-			if (itemName.startsWith("d")) {
+			if (itemName.equals("done")) {
 				break;
 			}else {
 				System.out.println("How many?");
@@ -51,7 +53,7 @@ public class Server {
 		}
 	}
 
-	private void checkStock(String menuID) throws SQLException {
+	private void checkStock(String itemName) throws SQLException {
 		// will place an order only if the item is in stock rollback if not
 		try {
 			conn.setAutoCommit(false);
@@ -61,16 +63,17 @@ public class Server {
 
 			Statement stmt = conn.createStatement();
 
-			pstmt.setString(1, menuID);
+			pstmt.setString(1, itemName);
 
 			ResultSet rset = pstmt.executeQuery();
 
 			while (rset.next()) {
-
+				System.out.println("ammount");
 				stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
 						+ rset.getInt("itemID"));
 			}
 			conn.commit();
+			rset.close();
 		} catch (SQLException e) {
 			System.out.println("Item out of stock: rolling back....");
 			conn.rollback();
