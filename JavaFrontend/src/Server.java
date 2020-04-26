@@ -75,14 +75,12 @@ public class Server {
 			
 			//attempt to make a new view for this server, if already exists catch and move on. Will automatically make views for every individual server.
 			try {
-				stmt.executeUpdate("create view server_"+eid+"_view as select orderID, tableNumber from custOrder where orderTakenEid = " + eid);
+				stmt.executeUpdate("create view server_"+eid+"_view as select c.orderID, c.tableNumber, o.menuID, o.qty from custOrder as c, orderContains as o where c.orderID = o.orderID and c.orderTakenEid = " + eid );
 			}catch(SQLException e) {
 			}
-			ResultSet rset = stmt.executeQuery("select * from server_"+eid+"_view");
+			ResultSet rset = stmt.executeQuery("select orderID, tableNumber from server_"+eid+"_view group by orderID");
 			while (rset.next()) {
-				int orderID = rset.getInt("orderID");
-				int tableNumber = rset.getInt("tableNumber");
-				System.out.println("\torder: " + orderID + "\t" + "table: " + tableNumber);
+				System.out.println("\torder: " + rset.getInt("orderID") + "\t" + "table: " + rset.getInt("tableNumber"));
 			}
 			System.out.println("");
 		} catch (SQLException e) {
@@ -92,8 +90,31 @@ public class Server {
 		}
 	}
 
-	private static void getReciept() {
-		// TODO Auto-generated method stub
+	private void getReciept() throws IOException {
+		
+		Scanner s = new Scanner(System.in);
+		
+		System.out.println("\tWhich order is the reciept for?");
+		//forces a view to be made for the user
+		ServerView();
+		
+		String order = s.nextLine();
+		
+		try {
+			Statement stmt = conn.createStatement();
+			
+			ResultSet rset = stmt.executeQuery("select m.menuID, m.itemName, v.qty, v.qty * m.price as totalItem from menu as m, server_"+eid+"_view as v where v.menuID = m.menuID and v.orderID = "+order);
+			
+			System.out.println("\tReciept for "+order+":");
+			while(rset.next()) {
+				System.out.println("\t\t"+rset.getInt("qty")+" "+rset.getString("itemName")+"....."+rset.getFloat("totalItem"));
+			}
+				
+		} catch (SQLException e) {
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState:     " + e.getSQLState());
+			System.out.println("VendorError:  " + e.getErrorCode());
+		}
 
 	}
 
