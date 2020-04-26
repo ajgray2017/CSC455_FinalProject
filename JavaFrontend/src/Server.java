@@ -24,36 +24,63 @@ public class Server {
 
 	private void createOrder() throws SQLException {
 		Scanner s = new Scanner(System.in);
+		Boolean inStock = false;
+		Integer newID = null;
 		s.useDelimiter(System.lineSeparator());
+
+		System.out.println("Which Table?");
+		String tableNum = s.nextLine();
 		System.out.println("What item would you like to ring in? Type 'done' to finish ordering.");
 		String itemName = s.nextLine();
 		System.out.println("How many?");
 		Integer qty = s.nextInt();
-		
+		s.nextLine();
+
+		// todo add in trans here?
+		// try {
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery("select max(orderID) as newID from custOrder");
+		if (rset.next()) {
+			newID = rset.getInt("newID") + 1;
+			stmt.executeUpdate("insert into custOrder values (" + (newID) + ", " + eid + ", null, " + tableNum + ")");
+		}
+		rset.close();
+
 		while (true) {
 			if (itemName.startsWith("d")) {
 				break;
 			} else {
 				for (int i = 0; i < qty; i++) {
-					System.out.println("for");
-					checkStock(itemName);
+					// bool instock if checkStock returns true, doesn't rollback changes
+					inStock = checkStock(itemName);
 				}
 			}
-			
+			if (inStock) {
+				stmt = conn.createStatement();
+				rset = stmt.executeQuery("select menuID from menu where itemName = \"" + itemName + "\"");
+				if (rset.next()) {
+					stmt.executeUpdate("insert into orderContains values(" + rset.getInt("menuID") + ", " + newID + ", " + qty + ")");
+				}
+			}
+
 			System.out.println("Next item? Type 'done' to finish ordering.");
 			itemName = s.nextLine();
-			s.nextLine();
 			if (itemName.equals("done")) {
 				break;
-			}else {
+			} else {
 				System.out.println("How many?");
 				qty = s.nextInt();
 				s.nextLine();
 			}
 		}
+//		} catch (SQLException e) {
+//			System.out.println("SQLException: " + e.getMessage());
+//			System.out.println("SQLState:     " + e.getSQLState());
+//			System.out.println("VendorError:  " + e.getErrorCode());
+//		}
 	}
 
-	private void checkStock(String itemName) throws SQLException {
+	private Boolean checkStock(String itemName) throws SQLException {
 		// will place an order only if the item is in stock rollback if not
 		try {
 			conn.setAutoCommit(false);
@@ -68,7 +95,6 @@ public class Server {
 			ResultSet rset = pstmt.executeQuery();
 
 			while (rset.next()) {
-				System.out.println("ammount");
 				stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
 						+ rset.getInt("itemID"));
 			}
@@ -77,10 +103,12 @@ public class Server {
 		} catch (SQLException e) {
 			System.out.println("Item out of stock: rolling back....");
 			conn.rollback();
+			conn.setAutoCommit(true);
+			return false;
 		} finally {
 			conn.setAutoCommit(true);
 		}
-
+		return true;
 	}
 
 	private void ServerView() throws IOException {
@@ -160,6 +188,8 @@ public class Server {
 				break;
 			case 4:
 				working = false;
+				String[] args = null;
+				JDBC.main(args);
 				break;
 
 			}

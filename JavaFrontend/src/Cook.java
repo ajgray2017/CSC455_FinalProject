@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -65,11 +66,8 @@ public class Cook {
 
 			if (rset.next()) {
 
-				System.out.println("\tOID: " + rset.getInt("orderID"));
-
 				while (rset.next()) {
-					System.out.println(
-							"\tItem Name: " + rset.getString("itemName") + " QTY: " + rset.getString("qty") + "\n");
+					System.out.println("\tOID: " + rset.getInt("orderID") + " ... Item Name: " + rset.getString("itemName") + " ... QTY: " + rset.getString("qty") + "\n");
 				}
 			} else {
 				System.out.println("\tNo Current Orders\n");
@@ -83,7 +81,7 @@ public class Cook {
 
 	}
 
-	public void start() {
+	public void start() throws IOException, SQLException {
 		boolean working = true;
 
 		while (working) {
@@ -97,6 +95,8 @@ public class Cook {
 				break;
 			case 3:
 				working = false;
+				String[] args = null;
+				JDBC.main(args);
 				break;
 			case 4:
 				break; // TODO add call to help method in jdbc
