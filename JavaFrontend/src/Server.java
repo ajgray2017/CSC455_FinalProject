@@ -21,20 +21,33 @@ public class Server {
 		Scanner s = new Scanner(System.in);
 		return s.nextInt();
 	}
-	
+
 	private void createOrder() throws SQLException {
 		Scanner s = new Scanner(System.in);
-		System.out.println("What item would you like to ring in? Type done when done: ");
-		String menuID = s.nextLine();
-		
-		while(true) {
-			if (menuID.equals("")) {
+		System.out.println("What item would you like to ring in? Type 'done' to finish ordering.");
+		String itemName = s.nextLine();
+		System.out.println("How many?");
+		Integer qty = s.nextInt();
+
+		while (true) {
+			if (itemName.startsWith("d")) {
 				break;
-			}else{
-				checkStock(menuID);
-				menuID = s.nextLine();
+			} else {
+				for (int i = 0; i < qty; i++) {
+					checkStock(itemName);
+				}
 			}
 			
+			System.out.println("Next item? Type 'done' to finish ordering.");
+			itemName = s.nextLine();
+			s.nextLine();
+			if (itemName.startsWith("d")) {
+				break;
+			}else {
+				System.out.println("How many?");
+				qty = s.nextInt();
+				s.nextLine();
+			}
 		}
 	}
 
@@ -53,7 +66,7 @@ public class Server {
 			ResultSet rset = pstmt.executeQuery();
 
 			while (rset.next()) {
-				
+
 				stmt.executeUpdate("update stock set amount =" + (rset.getInt("amount") - 1) + " where itemID = "
 						+ rset.getInt("itemID"));
 			}
@@ -68,19 +81,24 @@ public class Server {
 	}
 
 	private void ServerView() throws IOException {
-		// this method will allow the server to view the tables that have their EID		
-		
+		// this method will allow the server to view the tables that have their EID
+
 		try {
 			Statement stmt = conn.createStatement();
-			
-			//attempt to make a new view for this server, if already exists catch and move on. Will automatically make views for every individual server.
+
+			// attempt to make a new view for this server, if already exists catch and move
+			// on. Will automatically make views for every individual server.
 			try {
-				stmt.executeUpdate("create view server_"+eid+"_view as select c.orderID, c.tableNumber, o.menuID, o.qty from custOrder as c, orderContains as o where c.orderID = o.orderID and c.orderTakenEid = " + eid );
-			}catch(SQLException e) {
+				stmt.executeUpdate("create view server_" + eid
+						+ "_view as select c.orderID, c.tableNumber, o.menuID, o.qty from custOrder as c, orderContains as o where c.orderID = o.orderID and c.orderTakenEid = "
+						+ eid);
+			} catch (SQLException e) {
 			}
-			ResultSet rset = stmt.executeQuery("select orderID, tableNumber from server_"+eid+"_view group by orderID");
+			ResultSet rset = stmt
+					.executeQuery("select orderID, tableNumber from server_" + eid + "_view group by orderID");
 			while (rset.next()) {
-				System.out.println("\torder: " + rset.getInt("orderID") + "\t" + "table: " + rset.getInt("tableNumber"));
+				System.out
+						.println("\torder: " + rset.getInt("orderID") + "\t" + "table: " + rset.getInt("tableNumber"));
 			}
 			System.out.println("");
 		} catch (SQLException e) {
@@ -91,25 +109,29 @@ public class Server {
 	}
 
 	private void getReciept() throws IOException {
-		
+
 		Scanner s = new Scanner(System.in);
-		
+
 		System.out.println("\tWhich order is the reciept for?");
-		//forces a view to be made for the user
+		// forces a view to be made for the user
 		ServerView();
-		
+
 		String order = s.nextLine();
-		
+
 		try {
 			Statement stmt = conn.createStatement();
-			
-			ResultSet rset = stmt.executeQuery("select m.menuID, m.itemName, v.qty, v.qty * m.price as totalItem from menu as m, server_"+eid+"_view as v where v.menuID = m.menuID and v.orderID = "+order);
-			
-			System.out.println("\tReciept for "+order+":");
-			while(rset.next()) {
-				System.out.println("\t\t"+rset.getInt("qty")+" "+rset.getString("itemName")+"....."+rset.getFloat("totalItem"));
+
+			ResultSet rset = stmt.executeQuery(
+					"select m.menuID, m.itemName, v.qty, v.qty * m.price as totalItem from menu as m, server_" + eid
+							+ "_view as v where v.menuID = m.menuID and v.orderID = " + order);
+
+			System.out.println("\tReciept for " + order + ":");
+			while (rset.next()) {
+				System.out.println("\t\t" + rset.getInt("qty") + " " + rset.getString("itemName") + "....."
+						+ rset.getFloat("totalItem"));
+				// System.out.println("\t\t\t"+rset.getFloat("totalCost"));
 			}
-				
+
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
 			System.out.println("SQLState:     " + e.getSQLState());
