@@ -74,12 +74,13 @@ create table stock
 )
 ENGINE=INNODB;
 
-DELIMITER  $$ 
+DELIMITER  // 
 
- create procedure greeting(in inEid integer, out ename varchar)
-   begin
-   select employeeName into ename from employee where inEid = eid;
-   END $$ 
+create procedure 
+greeting(in Ieid integer) 
+begin 
+select employeeName, position from employee where eid = Ieid; 
+end//
 
 DELIMITER ;
 
