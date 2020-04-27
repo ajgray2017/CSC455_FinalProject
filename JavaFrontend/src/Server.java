@@ -130,8 +130,7 @@ public class Server {
 			ResultSet rset = stmt
 					.executeQuery("select orderID, tableNumber from server_" + eid + "_view group by orderID");
 			while (rset.next()) {
-				System.out
-						.println("\torder: " + rset.getInt("orderID") + "\t" + "table: " + rset.getInt("tableNumber"));
+				System.out.println("\torder: " + rset.getInt("orderID") + "\t" + "table: " + rset.getInt("tableNumber"));
 			}
 			System.out.println("");
 		} catch (SQLException e) {

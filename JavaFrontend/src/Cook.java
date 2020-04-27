@@ -19,7 +19,6 @@ public class Cook {
 		System.out.println("1. See all current orders");
 		System.out.println("2. Complete an order");
 		System.out.println("3. Logout");
-		System.out.println("4. Help");
 
 		return s.nextInt();
 	}
@@ -98,8 +97,6 @@ public class Cook {
 				String[] args = null;
 				JDBC.main(args);
 				break;
-			case 4:
-				break; // TODO add call to help method in jdbc
 
 			}
 		}
