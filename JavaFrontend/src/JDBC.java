@@ -77,12 +77,12 @@ public class JDBC
         System.out.println("Welcome ("+pos[1]+"), "+pos[2]+"!");
         
         if (pos[1].startsWith("C")) {
-        	Cook cook = new Cook(pos[1], conn);
+        	Cook cook = new Cook(pos[0], conn);
         	cook.start();
         }
         
         else if (pos[1].startsWith("S")) {
-        	Server server = new Server(pos[1], conn);
+        	Server server = new Server(pos[0], conn);
         	server.start(conn);
         }
     }
