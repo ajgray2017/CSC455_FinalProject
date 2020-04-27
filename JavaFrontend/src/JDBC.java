@@ -33,23 +33,21 @@ public class JDBC
     }
     
     public static String[] get_position(Connection conn) {
-    	String[] rslt = new String[2];
+    	String[] rslt = new String[3];
     	try {
     	// do queries here that will be protected by a prepared statement
     	Scanner s = new Scanner(System.in);
     	System.out.print("Enter EID: ");
     	String eid = s.nextLine();
     	
-    	rslt[1] = eid;
+    	rslt[0] = eid;
     	
-    	PreparedStatement pStmt = conn.prepareStatement(
-    			"select position from employee where eid = ?");
-    	
-    	pStmt.setString(1, eid);
-    	ResultSet rset = pStmt.executeQuery();
+    	CallableStatement cs = conn.prepareCall("{call greeting("+eid+")}");
+    	ResultSet rset = cs.executeQuery();
     	
     	while (rset.next()) {
-    		rslt[0] = rset.getString(1);
+    		rslt[1] = rset.getString("position");
+    		rslt[2] = rset.getString("employeeName");
     	}
     	
     	} catch (SQLException e) {
@@ -76,12 +74,14 @@ public class JDBC
         
         String[] pos = get_position(conn);
         
-        if (pos[0].startsWith("C")) {
+        System.out.println("Welcome ("+pos[1]+"), "+pos[2]+"!");
+        
+        if (pos[1].startsWith("C")) {
         	Cook cook = new Cook(pos[1], conn);
         	cook.start();
         }
         
-        else if (pos[0].startsWith("S")) {
+        else if (pos[1].startsWith("S")) {
         	Server server = new Server(pos[1], conn);
         	server.start(conn);
         }
