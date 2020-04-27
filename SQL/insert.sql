@@ -31,7 +31,7 @@ INSERT INTO orderContains VALUES(503, 5006, 2);
 INSERT INTO orderContains VALUES(503, 5007, 4);
 
 INSERT INTO menu VALUES(501, "Burger", 9.99);
-INSERT INTO menu VALUES(502, "Chicken Sandwich", 7.99);
+INSERT INTO menu VALUES(502, "ChickenSandwich", 7.99);
 INSERT INTO menu VALUES(503, "Salad", 4.99);
 
 INSERT INTO takesFrom VALUES(501, 101);
