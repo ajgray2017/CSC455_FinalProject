@@ -58,10 +58,6 @@ public class JDBC
     	
     	return rslt;
     }
-    
-    public void helper() {
-    	
-    }
   
     public static void main(String[] args) throws IOException, SQLException {
         String database_name, username,password;
